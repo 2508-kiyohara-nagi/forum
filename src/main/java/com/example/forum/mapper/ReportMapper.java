@@ -15,6 +15,8 @@ public interface ReportMapper {
 
     Report selectReportById(@Param("id") Integer id);
 
+    void insertReport(Report report);
+
     void updateReport(Report report);
 
     void delete(@Param("id") Integer id);

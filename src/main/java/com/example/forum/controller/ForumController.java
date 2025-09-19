@@ -3,9 +3,8 @@ package com.example.forum.controller;
 import com.example.forum.controller.form.CommentForm;
 import com.example.forum.repository.entity.Comment;
 import com.example.forum.controller.form.ReportForm;
-import com.example.forum.repository.entity.Report;
+import com.example.forum.service.CommentService;
 import com.example.forum.service.ReportService;
-import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +29,8 @@ import java.util.List;
 public class ForumController {
     @Autowired
     ReportService reportService;
+    @Autowired
+    CommentService commentService;
 
     /*
      * 投稿内容表示処理
@@ -81,7 +82,7 @@ public class ForumController {
         // 投稿を全件取得
         List<ReportForm> contentData = reportService.findAllReport(start, end);
         //返信投稿全権取得
-        List<CommentForm> commentTextData = reportService.findAllComment();
+        List<CommentForm> commentTextData = commentService.findAllComment();
         // 画面遷移先を指定
         mav.setViewName("/top");
         // 投稿データオブジェクトを保管
@@ -124,7 +125,7 @@ public class ForumController {
             mav.addObject("errorMessages", errorMessages);
             return mav;
         }
-        reportService.saveReport(reportForm);
+        reportService.insertReport(reportForm);
 
         return new ModelAndView("redirect:/");
     }
@@ -217,7 +218,7 @@ public class ForumController {
             return mav;
         }
         reportService.updateUpdatedComment(id, Timestamp.from(Instant.now()));
-        reportService.saveComment(commentForm);
+        commentService.insertComment(commentForm);
 
         return new ModelAndView("redirect:/");
     }
@@ -227,7 +228,7 @@ public class ForumController {
     @DeleteMapping("/delete/comment/{id}")
     public ModelAndView deleteText(@PathVariable Integer id) {
 
-        reportService.deleteComment(id);
+        commentService.deleteComment(id);
 
         return new ModelAndView("redirect:/");
     }
@@ -238,7 +239,7 @@ public class ForumController {
     public ModelAndView editText(@PathVariable Integer id) {
         ModelAndView mav = new ModelAndView();
 
-        CommentForm comment = reportService.editComment(id);
+        CommentForm comment = commentService.editComment(id);
         mav.addObject("formModel", comment);
 
         mav.setViewName("/editComment");
@@ -268,7 +269,7 @@ public class ForumController {
         // UrlParameterのidを更新するentityにセット
         comment.setId(id);
         // 編集した投稿を更新
-        reportService.saveComment(comment);
+        commentService.updateComment(comment);
 
         return new ModelAndView("redirect:/");
     }

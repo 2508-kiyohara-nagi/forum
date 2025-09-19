@@ -13,10 +13,8 @@ import java.util.List;
 
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Integer> {
-    //public List<Report> findAllByOrderByIdDesc();
+
     // createdDate が start ～ end の間にあるデータを取得
-    //updateの降順に変更
-    //public List<Report> findByCreatedDateBetweenOrderByCreatedDateDesc(Timestamp start, Timestamp end);
     public List<Report> findByUpdatedDateBetweenOrderByUpdatedDateDesc(Timestamp start, Timestamp end);
     // updated_date のみ更新
     @Modifying

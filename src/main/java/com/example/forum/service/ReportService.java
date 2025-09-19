@@ -21,8 +21,6 @@ import java.util.List;
 public class ReportService {
     @Autowired
     ReportMapper reportMapper;
-    @Autowired
-    CommentMapper commentMapper;
 
     /*
      * レコード全件取得処理
@@ -53,31 +51,14 @@ public class ReportService {
         return reports;
     }
     /*
-     * 返信投稿レコード全件取得処理
+     * レコードの追加
      */
-    public List<CommentForm> findAllComment() {
-        List<Comment> results = commentMapper.selectAllOrderByIdDesc();
-        List<CommentForm> reports = setCommentForm(results);
-        return reports;
+    public void insertReport(ReportForm reqReport) {
+        Report saveReport = setReportEntity(reqReport);
+        reportMapper.insertReport(saveReport);
     }
     /*
-     * DBから取得した返信データをFormに設定
-     */
-    private List<CommentForm> setCommentForm(List<Comment> results) {
-        List<CommentForm> comments = new ArrayList<>();
-
-        for (int i = 0; i < results.size(); i++) {
-            CommentForm comment = new CommentForm();
-            Comment result = results.get(i);
-            comment.setId(result.getId());
-            comment.setReportId(result.getReportId());
-            comment.setText(result.getText());
-            comments.add(comment);
-        }
-        return comments;
-    }
-    /*
-     * レコード追加
+     * 編集の更新
      */
     public void saveReport(ReportForm reqReport) {
         Report saveReport = setReportEntity(reqReport);
@@ -112,42 +93,7 @@ public class ReportService {
         List<ReportForm> reports = setReportForm(results);
         return reports.get(0);
     }
-    /*
-     * commentテーブルのレコード追加
-     */
-    public void saveComment(CommentForm reqComment) {
-        Comment saveComment = setCommentEntity(reqComment);
-        commentMapper.insertComment(saveComment);
-    }
-    /*
-     * リクエストから取得した情報をEntityに設定
-     */
-    private Comment setCommentEntity(CommentForm reqComment) {
-        Comment comment = new Comment();
-        comment.setId(reqComment.getId());
-        comment.setReportId(reqComment.getReportId());
-        comment.setText(reqComment.getText());
-        return comment;
-    }
-    /*
-     * 返信投稿の削除
-     */
-    public void deleteComment(Integer id) {
-        commentMapper.deleteComment(id);
-    }
-    /*
-     * レコード1件取得
-     */
-    public CommentForm editComment(Integer id) {
-        Comment comment = commentMapper.selectCommentById(id);
-        if (comment == null) {
-            return null;
-        }
-        List<Comment> results = new ArrayList<>();
-        results.add(comment);
-        List<CommentForm> reports = setCommentForm(results);
-        return reports.get(0);
-    }
+
     /*
      * UpdatedDate更新
      */
