@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link th:href="@{/css/style.css}" rel="styleSheet">
+    <title>TOP</title>
+</head>
+<body>
+<div class="header-contents">
+    <h1>匿名掲示板</h1>
+</div>
+<form th:action="@{ / }" method="get">
+    開始: <input type="date" name = "start" th:value="${start}"/> ～
+    終了: <input type="date" name = "end" th:value="${end}"/>
+    <input type="submit" value="絞込">
+</form>
+<div class="main-contents">
+    <a href="/new">
+        <button class="new-button" type="button">新規投稿</button>
+    </a>
+    <div class="message-icon" th:each="content : ${contents}">
+        <div>
+            ID : <span th:text="${content.id}"/>
+        </div>
+        <div class="text">
+            投稿 : <span th:text="${content.content}"/>
+        </div>
+        <!-- ボタンを囲むコンテナ -->
+        <div class="button-group">
+            <!--削除機能追加-->
+            <div class="delete-button" >
+                <form th:action="@{/delete/report/{id}(id=${content.id})}" th:method="delete">
+                    <input type="submit" value="削除">
+                </form>
+            </div>
+            <!--編集画面に移行-->
+            <div class="edit-button">
+                <a th:href="@{/edit/report/{id}(id=${content.id})}">
+                    <input type="button" value="編集">
+                </a>
+            </div>
+            <!--コメント返信画面に移行-->
+            <div class="comment-button">
+                <a th:href="@{/comment/{id}(id=${content.id})}">
+                    <input type="button" value="返信投稿">
+                </a>
+            </div>
+        </div>
+        <!--返信投稿表示-->
+        <div class="commentMessage-icon" th:each="comment : ${comments}"th:if="${comment.reportId == content.id}">
+            <div class="text">
+                返信投稿 : <span th:text="${comment.text}"/>
+            </div>
+            <!--返信投稿削除機能追加-->
+            <div class="delete-button" >
+                <form th:action="@{/delete/comment/{id}(id=${comment.id})}" th:method="delete">
+                    <input type="submit" value="削除">
+                </form>
+            </div>
+            <!--返信投稿編集画面に移行-->
+            <div class="edit-button">
+                <a th:href="@{/edit/comment/{id}(id=${comment.id})}">
+                    <input type="button" value="編集">
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

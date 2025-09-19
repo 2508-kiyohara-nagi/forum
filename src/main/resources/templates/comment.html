@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link th:href="@{/css/style.css}" rel="styleSheet">
+    <title>コメント返信</title>
+</head>
+<body>
+<div class="header-contents">
+    <h2>コメント返信</h2>
+</div>
+<!--エラーメッセージ出力-->
+<div th:if="${errorMessages} != null">
+    <div th:each="errorMessage : ${errorMessages}" th:text="${errorMessage}"></div>
+</div>
+<div class="main-contents">
+        <form th:action="@{/comment/add/{reportId}(reportId=${commentFormModel.reportId})}"th:object="${commentFormModel}" th:method="post">
+        <div class="form-area">
+            <label>投稿内容</label> <textarea class="tweet-box" name="text" th:field="*{text}" size="20" maxlength="200" /></textarea>
+            <br/> <input type="submit" value="返信"/>
+        </div>
+    </form>
+</div>
+<div class="footer-contents">
+    <form action="/">
+        <input type="submit" value="戻る" />
+    </form>
+</div>
+</body>
+</html>
