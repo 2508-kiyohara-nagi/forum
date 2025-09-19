@@ -2,6 +2,8 @@ package com.example.forum.service;
 
 import com.example.forum.controller.form.CommentForm;
 import com.example.forum.controller.form.ReportForm;
+import com.example.forum.mapper.CommentMapper;
+import com.example.forum.mapper.ReportMapper;
 import com.example.forum.repository.CommentRepository;
 import com.example.forum.repository.entity.Comment;
 import com.example.forum.repository.ReportRepository;
@@ -18,9 +20,9 @@ import java.util.List;
 @Service
 public class ReportService {
     @Autowired
-    ReportRepository reportRepository;
+    ReportMapper reportMapper;
     @Autowired
-    CommentRepository commentRepository;
+    CommentMapper commentMapper;
 
     /*
      * レコード全件取得処理
@@ -31,7 +33,7 @@ public class ReportService {
         Timestamp endTimestamp = new Timestamp(end.getTime());
         //List<Report> results = reportRepository.findAllByOrderByIdDesc();
         //List<Report> results = reportRepository.findByCreatedDateBetweenOrderByCreatedDateDesc(startTimestamp, endTimestamp);
-        List<Report> results = reportRepository.findByUpdatedDateBetweenOrderByUpdatedDateDesc(startTimestamp, endTimestamp);
+        List<Report> results = reportMapper.selectReportsByUpdatedDate(startTimestamp, endTimestamp);
         List<ReportForm> reports = setReportForm(results);
         return reports;
     }
@@ -54,7 +56,7 @@ public class ReportService {
      * 返信投稿レコード全件取得処理
      */
     public List<CommentForm> findAllComment() {
-        List<Comment> results = commentRepository.findAllByOrderByIdDesc();
+        List<Comment> results = commentMapper.selectAllOrderByIdDesc();
         List<CommentForm> reports = setCommentForm(results);
         return reports;
     }
@@ -79,7 +81,7 @@ public class ReportService {
      */
     public void saveReport(ReportForm reqReport) {
         Report saveReport = setReportEntity(reqReport);
-        reportRepository.save(saveReport);
+        reportMapper.updateReport(saveReport);
     }
 
     /*
@@ -95,14 +97,18 @@ public class ReportService {
      * 投稿の削除
      */
     public void deleteReport(Integer id) {
-        reportRepository.deleteById(id);
+        reportMapper.delete(id);
     }
     /*
      * レコード1件取得
      */
     public ReportForm editReport(Integer id) {
+        Report report = reportMapper.selectReportById(id);
+        if (report == null) {
+            return null;
+        }
         List<Report> results = new ArrayList<>();
-        results.add(reportRepository.findById(id).orElse(null));
+        results.add(report);
         List<ReportForm> reports = setReportForm(results);
         return reports.get(0);
     }
@@ -111,7 +117,7 @@ public class ReportService {
      */
     public void saveComment(CommentForm reqComment) {
         Comment saveComment = setCommentEntity(reqComment);
-        commentRepository.save(saveComment);
+        commentMapper.insertComment(saveComment);
     }
     /*
      * リクエストから取得した情報をEntityに設定
@@ -127,14 +133,18 @@ public class ReportService {
      * 返信投稿の削除
      */
     public void deleteComment(Integer id) {
-        commentRepository.deleteById(id);
+        commentMapper.deleteComment(id);
     }
     /*
      * レコード1件取得
      */
     public CommentForm editComment(Integer id) {
+        Comment comment = commentMapper.selectCommentById(id);
+        if (comment == null) {
+            return null;
+        }
         List<Comment> results = new ArrayList<>();
-        results.add(commentRepository.findById(id).orElse(null));
+        results.add(comment);
         List<CommentForm> reports = setCommentForm(results);
         return reports.get(0);
     }
@@ -142,7 +152,7 @@ public class ReportService {
      * UpdatedDate更新
      */
     public void updateUpdatedComment(int id, Timestamp updatedDate) {
-        reportRepository.updateUpdatedDate(id, updatedDate); // ✅ OK：インスタンスから呼び出す
+        reportMapper.updateReportUpdatedDate(id, updatedDate); // ✅ OK：インスタンスから呼び出す
     }
 
 }
